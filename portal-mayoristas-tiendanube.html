@@ -1,0 +1,268 @@
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --accent: #f4d334; --accent-dark: #c9aa1a; --accent-text: #1a1a1a;
+    --text: #1a1a1a; --text-muted: #666; --border: rgba(0,0,0,0.12);
+    --surface: #ffffff; --bg: #f8f7f3;
+    --success-bg: #f0faf4; --success-border: #b6e0c8; --success-text: #2d7a50;
+    --error-bg: #fff3f3; --error-border: #f5c0c0; --error-text: #b03030;
+  }
+  .portal-wrap { max-width: 540px; margin: 2rem auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  .portal-card { background: var(--surface); border-radius: 16px; border: 0.5px solid var(--border); overflow: hidden; box-shadow: 0 2px 24px rgba(0,0,0,0.06); }
+  .portal-header { background: #1a1a1a; padding: 2rem 2rem 1.75rem; text-align: center; }
+  .portal-header .logo { color: var(--accent); font-size: 22px; font-weight: 600; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .portal-header p { color: #aaa; font-size: 13px; }
+  .tab-bar { display: flex; border-bottom: 0.5px solid var(--border); }
+  .tab-btn { flex: 1; padding: 14px 8px; font-size: 14px; font-weight: 500; background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; color: var(--text-muted); transition: color 0.2s, border-color 0.2s, background 0.2s; }
+  .tab-btn.active { color: var(--text); border-bottom-color: var(--accent); }
+  .tab-btn:hover:not(.active) { background: #fafafa; color: var(--text); }
+  .form-body { padding: 1.75rem 2rem; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 480px) { .form-row { grid-template-columns: 1fr; } }
+  .form-group { margin-bottom: 14px; }
+  .form-group label { display: block; font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .form-group input { width: 100%; height: 42px; border: 0.5px solid var(--border); border-radius: 8px; padding: 0 12px; font-size: 14px; color: var(--text); background: var(--surface); transition: border-color 0.2s, box-shadow 0.2s; }
+  .form-group input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(244,211,52,0.18); }
+  .form-group input::placeholder { color: #bbb; }
+  .btn-primary { width: 100%; height: 46px; background: var(--accent); color: var(--accent-text); border: none; border-radius: 9px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 6px; transition: background 0.2s, transform 0.1s, color 0.2s; }
+  .btn-primary:hover { background: var(--accent-dark); color: #fff; }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-primary:disabled { background: #e0e0e0; color: #999; cursor: not-allowed; }
+  .btn-ghost { width: 100%; margin-top: 1rem; height: 40px; background: none; border: 0.5px solid var(--border); border-radius: 8px; font-size: 13px; color: var(--text-muted); cursor: pointer; transition: border-color 0.2s, color 0.2s; }
+  .btn-ghost:hover { border-color: #bbb; color: var(--text); }
+  .alert { padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 14px; display: none; }
+  .alert.success { background: var(--success-bg); border: 0.5px solid var(--success-border); color: var(--success-text); }
+  .alert.error { background: var(--error-bg); border: 0.5px solid var(--error-border); color: var(--error-text); }
+  .alert.show { display: block; }
+  .link-toggle { text-align: center; margin-top: 16px; font-size: 13px; color: var(--text-muted); }
+  .link-toggle a { color: var(--text); font-weight: 600; cursor: pointer; text-decoration: underline; }
+  .divider { border: none; border-top: 0.5px solid var(--border); margin: 1.25rem 0; }
+  .tab-section { display: none; }
+  .tab-section.visible { display: block; }
+  .private-area { padding: 1.75rem 2rem; }
+  .welcome-banner { background: #1a1a1a; border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 14px; }
+  .ch-avatar { width: 46px; height: 46px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 700; color: var(--accent-text); flex-shrink: 0; text-transform: uppercase; }
+  .welcome-text h3 { color: #fff; font-size: 15px; font-weight: 600; }
+  .welcome-text p { color: #aaa; font-size: 12px; margin-top: 3px; }
+  .section-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 10px; }
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 1.5rem; }
+  .info-card { background: var(--bg); border-radius: 9px; padding: 12px 14px; border: 0.5px solid var(--border); }
+  .info-card .lbl { font-size: 11px; color: var(--text-muted); margin-bottom: 3px; }
+  .info-card .val { font-size: 14px; font-weight: 500; color: var(--text); }
+  .info-card .val.active { color: var(--success-text); }
+  .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 400px) { .action-grid { grid-template-columns: 1fr; } }
+  .action-card { border: 0.5px solid var(--border); border-radius: 12px; padding: 1.25rem 1rem; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; background: var(--surface); text-decoration: none; display: block; }
+  .action-card:hover { border-color: var(--accent); background: #fffdf0; }
+  .action-icon { font-size: 26px; margin-bottom: 8px; display: block; }
+  .action-label { font-size: 13px; font-weight: 600; color: var(--text); display: block; }
+  .action-sub { font-size: 11px; color: var(--text-muted); margin-top: 3px; display: block; }
+  .ch-spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(0,0,0,0.15); border-top-color: #1a1a1a; border-radius: 50%; animation: chspin 0.6s linear infinite; vertical-align: middle; margin-right: 6px; }
+  @keyframes chspin { to { transform: rotate(360deg); } }
+</style>
+
+<div class="portal-wrap">
+  <div class="portal-card">
+
+    <div class="portal-header">
+      <div class="logo">Chako Lab® Mayoristas</div>
+      <p>Acceso exclusivo para clientes mayoristas registrados</p>
+    </div>
+
+    <div id="ch-auth-panel">
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="chSwitchTab('login')">Iniciar sesión</button>
+        <button class="tab-btn" onclick="chSwitchTab('register')">Registrarse</button>
+      </div>
+
+      <div id="ch-login-section" class="tab-section visible form-body">
+        <div id="ch-login-alert" class="alert"></div>
+        <div class="form-group">
+          <label for="ch-login-email">Email</label>
+          <input type="email" id="ch-login-email" placeholder="tu@empresa.com" autocomplete="email" />
+        </div>
+        <div class="form-group">
+          <label for="ch-login-pass">Contraseña</label>
+          <input type="password" id="ch-login-pass" placeholder="••••••••" autocomplete="current-password" />
+        </div>
+        <button class="btn-primary" id="ch-login-btn" onclick="chDoLogin()">Ingresar</button>
+        <div class="link-toggle">
+          ¿No tenés cuenta? <a onclick="chSwitchTab('register')">Crea una acá</a>
+        </div>
+      </div>
+
+      <div id="ch-register-section" class="tab-section form-body">
+        <div id="ch-reg-alert" class="alert"></div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="ch-reg-nombre">Nombre</label>
+            <input type="text" id="ch-reg-nombre" placeholder="Juan" />
+          </div>
+          <div class="form-group">
+            <label for="ch-reg-apellido">Apellido</label>
+            <input type="text" id="ch-reg-apellido" placeholder="García" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="ch-reg-empresa">Empresa / Razón social</label>
+          <input type="text" id="ch-reg-empresa" placeholder="Distribuidora SRL" />
+        </div>
+        <div class="form-group">
+          <label for="ch-reg-comercial">Nombre comercial de la tienda</label>
+          <input type="text" id="ch-reg-comercial" placeholder="Mi Tienda" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="ch-reg-cuit">CUIT / RUT</label>
+            <input type="text" id="ch-reg-cuit" placeholder="20-12345678-9" />
+          </div>
+          <div class="form-group">
+            <label for="ch-reg-telefono">Teléfono</label>
+            <input type="tel" id="ch-reg-telefono" placeholder="+54 9 11..." />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="ch-reg-direccion">Dirección</label>
+          <input type="text" id="ch-reg-direccion" placeholder="Av. Corrientes 1234, CABA" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="ch-reg-email">Email</label>
+            <input type="email" id="ch-reg-email" placeholder="tu@empresa.com" />
+          </div>
+          <div class="form-group">
+            <label for="ch-reg-pass">Contraseña</label>
+            <input type="password" id="ch-reg-pass" placeholder="Mínimo 8 caracteres" />
+          </div>
+        </div>
+        <button class="btn-primary" id="ch-reg-btn" onclick="chDoRegister()">Solicitar acceso mayorista</button>
+        <div class="link-toggle">
+          ¿Ya tenés cuenta? <a onclick="chSwitchTab('login')">Iniciá sesión</a>
+        </div>
+      </div>
+    </div>
+
+    <div id="ch-private-panel" style="display:none;">
+      <div class="private-area">
+        <div class="welcome-banner">
+          <div class="ch-avatar" id="ch-priv-avatar">--</div>
+          <div class="welcome-text">
+            <h3 id="ch-priv-name">Bienvenido/a</h3>
+            <p id="ch-priv-empresa">Mayorista activo</p>
+          </div>
+        </div>
+        <div class="section-label">Tu cuenta</div>
+        <div class="info-grid">
+          <div class="info-card"><div class="lbl">CUIT / RUT</div><div class="val" id="ch-priv-cuit">—</div></div>
+          <div class="info-card"><div class="lbl">Teléfono</div><div class="val" id="ch-priv-tel">—</div></div>
+          <div class="info-card"><div class="lbl">Tienda</div><div class="val" id="ch-priv-tienda">—</div></div>
+          <div class="info-card"><div class="lbl">Estado</div><div class="val active">✓ Activo</div></div>
+        </div>
+        <hr class="divider" />
+        <div class="section-label">Acceso rápido</div>
+        <div class="action-grid">
+          <a class="action-card" href="URL_DEL_CATALOGO.pdf" target="_blank" download>
+            <span class="action-icon">📄</span>
+            <span class="action-label">Descargar catálogo</span>
+            <span class="action-sub">PDF actualizado</span>
+          </a>
+          <a class="action-card" href="/lista-precios-mayoristas" target="_blank">
+            <span class="action-icon">🏷️</span>
+            <span class="action-label">Lista de precios</span>
+            <span class="action-sub">Precios especiales</span>
+          </a>
+          <a class="action-card" href="/productos" target="_blank">
+            <span class="action-icon">📦</span>
+            <span class="action-label">Catálogo online</span>
+            <span class="action-sub">Productos para mayoristas</span>
+          </a>
+          <a class="action-card" href="https://wa.me/5491112345678?text=Hola,%20soy%20mayorista%20y%20quiero%20consultar" target="_blank">
+            <span class="action-icon">💬</span>
+            <span class="action-label">Contactar ventas</span>
+            <span class="action-sub">WhatsApp / email</span>
+          </a>
+        </div>
+        <button class="btn-ghost" onclick="chDoLogout()">Cerrar sesión</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const CH_KEY = 'chakolab_mayorista';
+const CH_USERS = [
+  { email: 'demo@mayorista.com', password: '123456', nombre: 'Juan', apellido: 'García', empresa: 'Distribuidora García SRL', comercial: 'Mi Tienda', cuit: '20-12345678-9', telefono: '+54 9 11 5555-1234', direccion: 'Av. Corrientes 1234' }
+];
+
+function chSwitchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', (tab==='login'&&i===0)||(tab==='register'&&i===1)));
+  document.getElementById('ch-login-section').classList.toggle('visible', tab==='login');
+  document.getElementById('ch-register-section').classList.toggle('visible', tab==='register');
+}
+function chShowAlert(id, type, msg) {
+  var el = document.getElementById(id);
+  el.className = 'alert ' + type + ' show';
+  el.textContent = msg;
+}
+function chHideAlert(id) { document.getElementById(id).classList.remove('show'); }
+function chSetLoading(btnId, loading) {
+  var btn = document.getElementById(btnId);
+  btn.disabled = loading;
+  if (loading) { btn.dataset.orig = btn.textContent; btn.innerHTML = '<span class="ch-spinner"></span> Procesando...'; }
+  else { btn.innerHTML = btn.dataset.orig || btn.textContent; }
+}
+function chDoLogin() {
+  chHideAlert('ch-login-alert');
+  var email = document.getElementById('ch-login-email').value.trim();
+  var pass = document.getElementById('ch-login-pass').value;
+  if (!email || !pass) { chShowAlert('ch-login-alert','error','Completá todos los campos.'); return; }
+  chSetLoading('ch-login-btn', true);
+  setTimeout(function() {
+    chSetLoading('ch-login-btn', false);
+    var user = CH_USERS.find(function(u){ return u.email===email && u.password===pass; });
+    if (user) { localStorage.setItem(CH_KEY, JSON.stringify(user)); chOpenPrivate(user); }
+    else { chShowAlert('ch-login-alert','error','Email o contraseña incorrectos.'); }
+  }, 700);
+}
+function chDoRegister() {
+  chHideAlert('ch-reg-alert');
+  var data = {
+    nombre: document.getElementById('ch-reg-nombre').value.trim(),
+    apellido: document.getElementById('ch-reg-apellido').value.trim(),
+    empresa: document.getElementById('ch-reg-empresa').value.trim(),
+    comercial: document.getElementById('ch-reg-comercial').value.trim(),
+    cuit: document.getElementById('ch-reg-cuit').value.trim(),
+    telefono: document.getElementById('ch-reg-telefono').value.trim(),
+    direccion: document.getElementById('ch-reg-direccion').value.trim(),
+    email: document.getElementById('ch-reg-email').value.trim(),
+    password: document.getElementById('ch-reg-pass').value
+  };
+  for (var k in data) { if (!data[k]) { chShowAlert('ch-reg-alert','error','Completá todos los campos obligatorios.'); return; } }
+  if (data.password.length < 8) { chShowAlert('ch-reg-alert','error','La contraseña debe tener al menos 8 caracteres.'); return; }
+  chSetLoading('ch-reg-btn', true);
+  setTimeout(function() {
+    chSetLoading('ch-reg-btn', false);
+    chShowAlert('ch-reg-alert','success','¡Solicitud enviada! Te contactaremos en 24-48 hs para activar tu cuenta.');
+  }, 900);
+}
+function chOpenPrivate(user) {
+  document.getElementById('ch-priv-avatar').textContent = (user.nombre[0]+user.apellido[0]).toUpperCase();
+  document.getElementById('ch-priv-name').textContent = 'Bienvenido/a, '+user.nombre+' '+user.apellido;
+  document.getElementById('ch-priv-empresa').textContent = user.empresa+' · Mayorista activo';
+  document.getElementById('ch-priv-cuit').textContent = user.cuit;
+  document.getElementById('ch-priv-tel').textContent = user.telefono;
+  document.getElementById('ch-priv-tienda').textContent = user.comercial;
+  document.getElementById('ch-auth-panel').style.display = 'none';
+  document.getElementById('ch-private-panel').style.display = 'block';
+}
+function chDoLogout() {
+  localStorage.removeItem(CH_KEY);
+  document.getElementById('ch-private-panel').style.display = 'none';
+  document.getElementById('ch-auth-panel').style.display = 'block';
+}
+(function() {
+  var s = localStorage.getItem(CH_KEY);
+  if (s) { try { chOpenPrivate(JSON.parse(s)); } catch(e){} }
+})();
+</script>
