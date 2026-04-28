@@ -188,7 +188,7 @@ const CH_KEY = 'chakolab_mayorista';
 const CH_USERS = [
   { email: 'demo@mayorista.com', password: '123456', nombre: 'Juan', apellido: 'García', empresa: 'Distribuidora García SRL', comercial: 'Mi Tienda', cuit: '20-12345678-9', telefono: '+54 9 11 5555-1234', direccion: 'Av. Corrientes 1234' }
 ];
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzF-y2VvCy0iBsLvKgGpm-2DUN83ZWCCM8jBc-QBcFggUSF3jREDkSXOY1Usc81Ck26Bw/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwt7oKFJnn0zpwsNBEJa6bYUylB5VynLfi4zmruURPWuGntGnfTwRQzZPR75_yKBEm-tQ/exec';
 
 function chSwitchTab(tab) {
   document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', (tab==='login'&&i===0)||(tab==='register'&&i===1)));
@@ -232,12 +232,17 @@ function chDoRegister() {
   for (var k in data) { if (!data[k]) { chShowAlert('ch-reg-alert','error','Completá todos los campos obligatorios.'); return; } }
   chSetLoading('ch-reg-btn', true);
 
-  fetch(SCRIPT_URL, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  }).then(function() {
+  var img = new Image();
+  img.src = SCRIPT_URL + '?nombre=' + encodeURIComponent(data.nombre) +
+    '&apellido=' + encodeURIComponent(data.apellido) +
+    '&empresa=' + encodeURIComponent(data.empresa) +
+    '&comercial=' + encodeURIComponent(data.comercial) +
+    '&cuit=' + encodeURIComponent(data.cuit) +
+    '&telefono=' + encodeURIComponent(data.telefono) +
+    '&direccion=' + encodeURIComponent(data.direccion) +
+    '&email=' + encodeURIComponent(data.email);
+
+  setTimeout(function() {
     chSetLoading('ch-reg-btn', false);
     chShowAlert('ch-reg-alert','success','¡Solicitud enviada! Te contactaremos en 24-48 hs para activar tu cuenta.');
     document.getElementById('ch-reg-nombre').value = '';
@@ -248,10 +253,7 @@ function chDoRegister() {
     document.getElementById('ch-reg-telefono').value = '';
     document.getElementById('ch-reg-direccion').value = '';
     document.getElementById('ch-reg-email').value = '';
-  }).catch(function() {
-    chSetLoading('ch-reg-btn', false);
-    chShowAlert('ch-reg-alert','success','¡Solicitud enviada! Te contactaremos en 24-48 hs para activar tu cuenta.');
-  });
+  }, 1500);
 }
 function chOpenPrivate(user) {
   document.getElementById('ch-priv-avatar').textContent = (user.nombre[0]+user.apellido[0]).toUpperCase();
